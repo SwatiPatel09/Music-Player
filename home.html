@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-Music-Player</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> -->
+</head>
+<body>
+    <div class="main_div">
+        <div class="music_container">
+            <h2 id="title">Chaka Chak</h2>
+            <h3 id="artist">Shreya Ghosal</h3>
+            <div class="img_container">
+                <img src="./Images/Img1.png" alt="">
+            </div>
+            <audio src="Music/Song1.mp3"></audio>
+            <!-- Progress Bar -->
+            <div class="progressbar_container"  id="progress_container">
+                <div class="progress_duration_meter">
+                    <div id="current_time">
+                        0.00
+                    </div>
+                    <div id="duration">
+                        2.44
+                    </div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            <!-- controls -->
+            <div class="music_controls">
+                <!-- <i class="fas fa-3x fa-step-backward" id="previous"></i>
+                <i class="fas main_button fa-3x fa-play-circle" id="masterPlay"></i>
+                <i class="fas fa-3x fa-step-forward" id="next"></i> -->
+                <i class="fa-solid fa-backward" id="prev" title="Previous"></i>
+                <i class="fa-solid fa-play main_button" id="Play" title="Play"></i>
+                <i class="fa-solid fa-forward" id="next" title="Next"></i>
+            </div>
+
+            
+            
+        </div>
+    </div>
+    <script>
+        const music=document.querySelector("audio");
+        const play=document.getElementById("Play");
+        const img=document.querySelector('img');
+        const prev=document.querySelector('#prev');
+        const next=document.querySelector('#next');
+        const title=document.querySelector('#title');
+        const artist=document.querySelector('#artist');
+        let progress=document.getElementById('progress');
+        let total_duration=document.getElementById('duration');
+        let current_time=document.getElementById('current_time');
+        let progress_div=document.getElementById('progress_div');
+        let marker=false;
+        const playMusic=()=>{
+            marker=true;
+            music.play();
+            play.classList.replace('fa-play','fa-pause');
+            img.classList.add('amine');
+        };
+        const pauseMusic=()=>{
+            music.pause();
+            marker=false;
+            play.classList.replace('fa-pause','fa-play');
+            img.classList.remove('amine');
+        };
+        play.addEventListener('click',()=>{
+            marker?pauseMusic():playMusic();
+        })
+
+        const songs=[
+            {name:'Swati_1',
+            artist:'Shreya',
+            title:'Chaka_Chak'},
+
+            {name:'Swati_2',
+            artist:'Artist2',
+            title:'Title_2'},
+
+            {name:'Swati_3',
+            artist:'Artist3',
+            title:'Title_3'}
+        ]
+
+        let songIndex=0;
+
+        const nextSong=()=>{
+            if(songIndex>=2)
+                songIndex=0;
+            else
+                songIndex++;
+            loadSongs(songs[songIndex]);
+            playMusic();
+        }
+
+        const prevSong=()=>{
+            if(songIndex<=0)
+                songIndex=0;
+            else
+                songIndex--;
+            loadSongs(songs[songIndex]);
+            playMusic();
+        }
+
+        //Progress js work
+
+        music.addEventListener('timeupdate',(event)=>{
+            const {currentTime,duration}=event.srcElement;
+            let progress_time=(currentTime/duration)*100;
+            progress.style.width=`${progress_time}%`;
+
+            //music duration update
+            let min_time=Math.floor(duration/60);
+            let sec_time=Math.floor(duration%60);
+            let total_time=`${min_time}:${sec_time}`;
+             if(duration)
+            total_duration.textContent=total_time;
+
+            //current duration update
+            let min_currentTime=Math.floor(currentTime/60);
+            let sec_currentTime=Math.floor(currentTime%60);
+            if(sec_currentTime<10){
+                sec_currentTime=`0${sec_currentTime}`;
+            }
+            let total_currentTime=`${min_currentTime}:${sec_currentTime}`;
+            current_time.textContent=total_currentTime;
+    
+        })
+
+        next.addEventListener('click',nextSong);
+        prev.addEventListener('click',prevSong);
+
+        //Changing the music data
+
+        const loadSongs=(songs)=>{
+            console.log(songs);
+            title.textContent=songs.title;
+            artist.textContent=songs.artist;
+             music.src="Music/Song"+`${songIndex+1}`+".mp3";
+            img.src="Images/Img"+`${songIndex+1}`+".png";
+        }
+
+        //When one song is finished then it plays the next song
+
+        music.addEventListener('ended',nextSong);
+
+        progress_div.addEventListener('click',(event)=>{
+            const {duration}=music;
+            let move_progress=(event.offsetX/event.srcElement.clientWidth)*duration;
+            music.currentTime=move_progress;
+        })
+    </script>
+</body>
+</html>
